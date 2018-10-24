@@ -1,0 +1,69 @@
+ <!DOCTYPE html>
+  <meta charset="utf-8" />
+  <head>
+	<title>NYT Книжки</title>
+  </head>
+  <body>
+	<input type="text" placeholder="date" id="dateInput" value="2018-10-20">	
+	</input>	
+	<button id="getList">
+		Получить книги
+	</button>
+	<div data-content = "books">
+	</div>
+  </body>
+  
+  <script language="javascript" type="text/javascript">
+	let url = "https://api.nytimes.com/svc/books/v3/lists/overview.json";	
+	let parameters = {
+		api_key: "8b6c701382564168a57aa9a06a5700e4",
+		published_date: ''
+	};		
+	let getList = document.querySelector('#getList').addEventListener('click', function(){
+		let dateInput = document.querySelector('#dateInput').value;		
+		parameters.published_date = dateInput;
+		
+		url +='?';
+		let parKeys = Object.keys(parameters);
+		let i = 0;
+		for (parameter in parKeys){
+			if (parKeys[i] === 'api_key'){
+				url+='api-key='+parameters[parKeys[i]];
+			}else{
+				url+=parKeys[i]+'='+parameters[parKeys[i]];
+			}
+			if (i < parKeys.length-1){
+				url+='&';
+			}
+			i++;
+		}
+		//console.log(url);
+		const xhr = new XMLHttpRequest();
+		xhr.open('GET', url, false);
+		xhr.send();
+		
+		let booklist = '<ul>';
+		let data;
+		if (xhr.status === 200){
+			data = JSON.parse(xhr.responseText);
+			console.log(data);
+			if (data.num_results !==0){
+				for (let list of data.results.lists){
+					booklist+='<li><b>'+list.display_name+'</b> (Количество книг: '+list.books.length+')</li>'
+				}
+			}else{
+				booklist = 'Пусто'
+			}
+			
+		}else{
+			console.log(xhr.status +' '+ xhr.statusText);
+		} 
+				
+		document.querySelector('div[data-content="books"]').innerHTML = booklist+((booklist!='Пусто')?'</ul>':'');
+		
+	});
+	
+  </script>
+
+
+  <div id="output"></div>
