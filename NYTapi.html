@@ -14,55 +14,23 @@
   </body>
   
   <script language="javascript" type="text/javascript">
-	let url = "https://api.nytimes.com/svc/books/v3/lists/overview.json";	
-	let parameters = {
-		api_key: "8b6c701382564168a57aa9a06a5700e4",
-		published_date: ''
-	};		
-	let getList = document.querySelector('#getList').addEventListener('click', function(){
-		let dateInput = document.querySelector('#dateInput').value;		
-		parameters.published_date = dateInput;
-		
-		url +='?';
-		let parKeys = Object.keys(parameters);
-		let i = 0;
-		for (parameter in parKeys){
-			if (parKeys[i] === 'api_key'){
-				url+='api-key='+parameters[parKeys[i]];
-			}else{
-				url+=parKeys[i]+'='+parameters[parKeys[i]];
-			}
-			if (i < parKeys.length-1){
-				url+='&';
-			}
-			i++;
-		}
-		//console.log(url);
+	const api_key = "8b6c701382564168a57aa9a06a5700e4";
+	const url = `https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=${api_key}&published_date=${document.querySelector('#dateInput').value}`;
+	let getList = document.querySelector('#getList').addEventListener('click', function(){		
+		const data = requestData(url);
+		document.querySelector('div[data-content="books"]').innerHTML = ([...printData(data)].join(''));
+	});
+	function requestData(url){
 		const xhr = new XMLHttpRequest();
 		xhr.open('GET', url, false);
 		xhr.send();
-		
-		let booklist = '<ul>';
-		let data;
-		if (xhr.status === 200){
-			data = JSON.parse(xhr.responseText);
-			console.log(data);
-			if (data.num_results !==0){
-				for (let list of data.results.lists){
-					booklist+='<li><b>'+list.display_name+'</b> (Количество книг: '+list.books.length+')</li>'
-				}
-			}else{
-				booklist = 'Пусто'
-			}
-			
-		}else{
-			console.log(xhr.status +' '+ xhr.statusText);
+		return (xhr.status === 200)? JSON.parse(xhr.responseText) : xhr.status;
+	}
+	function* printData(data){
+		for (let list of data.results.lists){
+			yield `<p>${list.display_name} (${list.books.length} книг в списке)</p>`;
 		} 
-				
-		document.querySelector('div[data-content="books"]').innerHTML = booklist+((booklist!='Пусто')?'</ul>':'');
-		
-	});
-	
+	}
   </script>
 
 
