@@ -15,8 +15,8 @@
   
   <script language="javascript" type="text/javascript">
 	const api_key = "8b6c701382564168a57aa9a06a5700e4";
-	const url = `https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=${api_key}&published_date=${document.querySelector('#dateInput').value}`;
-	let getList = document.querySelector('#getList').addEventListener('click', function(){		
+	let getList = document.querySelector('#getList').addEventListener('click', function(){	
+		const url = `https://api.nytimes.com/svc/books/v3/lists/overview.json?api-key=${api_key}&published_date=${document.querySelector('#dateInput').value}`;
 		const data = requestData(url);
 		document.querySelector('div[data-content="books"]').innerHTML = ([...printData(data)].join(''));
 	});
